@@ -1,0 +1,9 @@
+cxxflags = -Wall
+
+rule cc
+ command = g++ $cxxflags $in -o $out -lpthread
+
+build onboot-test: cc onboot_manager.cc cpu_monitor.cc tester.cc
+build test: cc test.cc
+
+default onboot-test test
