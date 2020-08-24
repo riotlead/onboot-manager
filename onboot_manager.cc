@@ -6,10 +6,6 @@ namespace amd {
 
 namespace onboot {
 
-typedef EA::Genetic<OnbootManager::Chromosome,OnbootManager::MiddleCost> GA_Type;
-typedef EA::GenerationType<OnbootManager::Chromosome,OnbootManager::MiddleCost> Generation_Type;
-
-
 OnbootManager::OnbootManager(ILaunchInterface& launch) : launch_(launch) {
     
 }
@@ -58,7 +54,7 @@ bool OnbootManager::EvalSolution(const Chromosome& p, MiddleCost& c) {
     return true;
 }
 
-OnbootManager::Chromosome OnbootManager::Mutate(const Chromosome& X_base, const std::function<double(void)> &rnd01, double shrink_scale) {
+Chromosome OnbootManager::Mutate(const Chromosome& X_base, const std::function<double(void)> &rnd01, double shrink_scale) {
     Chromosome X_new;
     const double mu = 0.2*shrink_scale; // mutation radius (adjustable)
     bool in_range;
@@ -73,7 +69,7 @@ OnbootManager::Chromosome OnbootManager::Mutate(const Chromosome& X_base, const 
     return X_new;
 }
 
-OnbootManager::Chromosome OnbootManager::Crossover(const Chromosome& X1, const Chromosome& X2, const std::function<double(void)> &rnd01) {
+Chromosome OnbootManager::Crossover(const Chromosome& X1, const Chromosome& X2, const std::function<double(void)> &rnd01) {
     Chromosome X_new;
     double r;
     r=rnd01();
@@ -131,18 +127,32 @@ void OnbootManager::Adjust() {
     ga_obj.verbose=false;
     ga_obj.population=200;
     ga_obj.generation_max=1000;
-    ga_obj.calculate_SO_total_fitness=SOFitness;
-    ga_obj.init_genes=InitGenes;
-    ga_obj.eval_solution=EvalSolution;
-    ga_obj.mutate=Mutate;
-    ga_obj.crossover=Crossover;
+    ga_obj.calculate_SO_total_fitness=[&](const GA_Type::thisChromosomeType &X) {
+        return this->SOFitness(X);
+    };
+
+    ga_obj.init_genes=[&](Chromosome& p, const std::function<double(void)> &rnd01) {
+        return this->InitGenes(p, rnd01);
+    };
+    ga_obj.eval_solution= [&](const Chromosome& p, MiddleCost& c) {
+        return this->EvalSolution(p, c);
+    };
+
+    ga_obj.mutate=[&](const Chromosome& X_base, const std::function<double(void)> &rnd01, double shrink_scale) {
+        return this->Mutate(X_base, rnd01, shrink_scale);
+    };
+
+    ga_obj.crossover=[&](const Chromosome& X1, const Chromosome& X2, const std::function<double(void)> &rnd01) {
+        return this->Crossover(X1, X2, rnd01);
+    };
+
     ga_obj.crossover_fraction=0.7;
     ga_obj.mutation_rate=0.2;
     ga_obj.best_stall_max=10;
     ga_obj.elite_count=10;
     ga_obj.solve();
 
-    cout<<"The problem is optimized in "<<timer.toc()<<" seconds."<<endl;
+    std::cout<<"The problem is optimized in "<<timer.toc()<<" seconds."<<std::endl;
 }
 
 } // namespace onboot

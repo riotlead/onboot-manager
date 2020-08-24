@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <functional>
 #include "cpu_monitor.hh"
+#include "openGA.hpp"
 
 #ifndef __ONBOOT_MANAGER_HH__
 #define __ONBOOT_MANAGER_HH__
@@ -10,6 +11,30 @@
 namespace amd {
 
 namespace onboot {
+
+class OnbootManager;
+
+class Chromosome {
+    public:
+    std::vector<int> var;
+    std::string to_string() const {
+        std::string str("{");
+        int i = 0;
+        for (int delay : var) {
+            str += ", var" + std::to_string(i) + ":" + std::to_string(delay);
+        }
+        str += "}";
+        return str;
+    }
+};
+
+class MiddleCost {
+    public:
+    double objective1;
+};
+
+typedef EA::Genetic<Chromosome,MiddleCost> GA_Type;
+typedef EA::GenerationType<Chromosome,MiddleCost> Generation_Type;
 
 class OnbootManager {
  public:
@@ -40,24 +65,6 @@ class OnbootManager {
         void finish();
     };
 
-    class Chromosome {
-     public:
-        std::vector<int> var;
-        std::string to_string() const {
-            std::string str("{");
-            int i = 0;
-            for (int delay : var) {
-                str += ", var" + std::to_string(i) + ":" + std::to_string(delay);
-            }
-            str += "}";
-            return str;
-        }
-    };
-
-    class MiddleCost {
-     public:
-        double objective1;
-    };
 
     OnbootManager(ILaunchInterface& launch);
     void AddList(std::string appid, int priority, int delay);

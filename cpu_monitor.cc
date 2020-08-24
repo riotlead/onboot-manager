@@ -66,9 +66,6 @@ void _get_cpu_idle(unsigned long long *total, unsigned long long *idle)
 
 void _get_pid_cpu(int pid, unsigned long long *usage) {
     FILE *fp;
-    int i;
-    unsigned long long sum = 0;
-    unsigned long long val; 
     char path[255] = {0, };
     char buf[255];
     char state;
@@ -223,6 +220,10 @@ void CpuMonitor::Dump() {
         }
         std::cout << std::endl;
     }
+}
+
+std::vector<ClockFrame>& CpuMonitor::GetResult() {
+    return history_;
 }
 
 void CpuMonitor::Add(int pid) {
