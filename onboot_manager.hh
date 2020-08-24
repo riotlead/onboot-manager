@@ -2,11 +2,13 @@
 #include <queue>
 #include <unordered_map>
 #include <functional>
+#include <mutex>
 #include "cpu_monitor.hh"
-#include "openGA.hpp"
 
 #ifndef __ONBOOT_MANAGER_HH__
 #define __ONBOOT_MANAGER_HH__
+
+#include "openGA.hpp"
 
 namespace amd {
 

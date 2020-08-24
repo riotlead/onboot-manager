@@ -1,7 +1,8 @@
 #include "cpu_monitor.hh"
 #include "onboot_manager.hh"
-#include "openGA.hpp"
+
 #include <iostream>
+
 namespace amd {
 
 namespace onboot {

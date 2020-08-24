@@ -1,12 +1,14 @@
 
-#include "onboot_manager.hh"
 #include <iostream>
 #include <thread>
 #include <unistd.h>
 #include <sys/types.h>
 #include <cstring>
 
+#include "onboot_manager.hh"
 using namespace amd::onboot;
+
+std::mutex EA::mtx_rand;
 
 class TestDriver : public OnbootManager::ILaunchInterface {
     int Launch(std::string appid) override {

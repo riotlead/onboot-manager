@@ -262,7 +262,7 @@ public:
 
 };
 
-std::mutex mtx_rand;
+extern std::mutex mtx_rand;
 
 template<typename GeneType,typename MiddleCostType>
 class Genetic
